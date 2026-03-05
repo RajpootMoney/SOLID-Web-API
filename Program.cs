@@ -14,9 +14,9 @@ builder.Services.AddSwaggerGen();
 
 // Configure SQLite Database
 // DEPENDENCY INVERSION PRINCIPLE (DIP): We depend on abstractions (DbContext) not concrete implementations
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite("Data Source=solid_demo.db")
-);
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//    options.UseSqlite("Data Source=solid_demo.db")
+//);
 
 // Register repositories - DIP: Depend on interfaces, not concrete classes
 builder.Services.AddScoped<IUserRepository, UserRepository>();
