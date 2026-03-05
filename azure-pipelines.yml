@@ -38,10 +38,10 @@ steps:
 # Zip publish output
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/_PublishedWebsites'
     includeRootFolder: false
     archiveType: zip
-    archiveFile: '$(Build.ArtifactStagingDirectory)/webapi.zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
 
 # Publish artifact
 - task: PublishBuildArtifacts@1
