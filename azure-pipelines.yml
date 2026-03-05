@@ -1,5 +1,5 @@
 trigger:
-- main
+- master
 
 pool:
   name: Default
@@ -11,31 +11,48 @@ variables:
 
 steps:
 
+# Install NuGet
 - task: NuGetToolInstaller@1
 
+# Restore packages
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
 
+# Build solution
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=FileSystem /p:PublishUrl=$(Build.ArtifactStagingDirectory)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
+# 🔴 Publish Web API
+- task: DotNetCoreCLI@2
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: publish
+    projects: '**/*WebAPI*.csproj'
+    arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: false
 
+# Zip publish output
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
+    includeRootFolder: false
+    archiveType: zip
+    archiveFile: '$(Build.ArtifactStagingDirectory)/webapi.zip'
+
+# Publish artifact
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(build.artifactStagingDirectory)'
-    ArtifactName: 'drop'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: drop
 
+# Deploy to Azure App Service
 - task: AzureWebApp@1
   inputs:
     azureSubscription: 'solid-web-api'
-    appName: 'SOLID-WebAPI'
-    package: '$(build.artifactStagingDirectory)/**/*.zip'
+    appType: webApp
+    appName: SOLID-WebAPI
+    package: '$(Build.ArtifactStagingDirectory)/webapi.zip'
