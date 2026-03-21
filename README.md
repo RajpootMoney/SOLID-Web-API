@@ -119,7 +119,7 @@ POST /api/products
 }
 ```
 
-## Database
+## Database 
 
 The application uses SQLite with a database file `solid_demo.db` that is automatically created on first run.
 
